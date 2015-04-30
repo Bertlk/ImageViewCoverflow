@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:imageCoverFlow="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.demo.imageviewcoverflow.CoverFlowView
+        android:id="@+id/coverflow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        imageCoverFlow:coverflowGravity="center_vertical"
+        imageCoverFlow:coverflowLayoutMode="wrap_content"
+        imageCoverFlow:reflectionGap="10dp"
+        imageCoverFlow:reflectionHeight="50%"
+        imageCoverFlow:visibleImage="7" >
+    </com.demo.imageviewcoverflow.CoverFlowView>
+
+</RelativeLayout>
