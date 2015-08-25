@@ -2,8 +2,11 @@ package com.demo.imageviewcoverflow;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -20,11 +23,11 @@ import android.widget.Scroller;
 public class CoverFlowView extends RelativeLayout {
 
 	public enum CoverFlowGravity {
-		TOP, BOTTOM, CENTER_VERTICAL;
+		TOP, BOTTOM, CENTER_VERTICAL
 	};
 
 	public enum CoverFlowLayoutMode {
-		MATCH_PARENT, WRAP_CONTENT;
+		MATCH_PARENT, WRAP_CONTENT
 	}
 
 	protected CoverFlowGravity mGravity;
@@ -59,9 +62,7 @@ public class CoverFlowView extends RelativeLayout {
 	protected int VISIBLE_VIEWS = 3;
 
 	private ICoverFlowAdapter mAdapter;
-	
-	
-	
+
     private float mOffset;
     private int mLastOffset;
 	
@@ -119,7 +120,7 @@ public class CoverFlowView extends RelativeLayout {
 				R.styleable.ImageCoverFlowView);
 
 		int totalVisibleChildren = a.getInt(
-				R.styleable.ImageCoverFlowView_visibleImage, 2);
+				R.styleable.ImageCoverFlowView_visibleImage, 3);
 		if (totalVisibleChildren % 2 == 0) { // 一屏幕必须是奇数显示
 			throw new IllegalArgumentException(
 					"visible image must be an odd number");
@@ -201,8 +202,6 @@ public class CoverFlowView extends RelativeLayout {
 			}
 			View view = mAdapter.getView(i, convertView, this);
 			showViewArray.put(i, view);
-			
-			System.out.println("@@@@@@@@@@@@@@@@@  111111111");
 			addView(view);
 		}
 		
@@ -321,7 +320,7 @@ public class CoverFlowView extends RelativeLayout {
 		
 	}
 
-	boolean isFirstin = true;
+	boolean isFirstin = true; //第一次初始化该控件
 	int lastMid = 1;
 	boolean isChange = true;
 	
@@ -333,9 +332,10 @@ public class CoverFlowView extends RelativeLayout {
             return;
         }
         
-//        System.out.println("##############  333333333333     " + getChildCount());
+//        System.out.println("##############  333333333333 " + getChildCount());
         
         final float offset = mOffset;
+//		        System.out.println("##############  333333333333     offset : " + offset);
         int i = 0;
         int mid = (int) Math.floor(offset + 0.5);
 
@@ -347,19 +347,15 @@ public class CoverFlowView extends RelativeLayout {
         int leftChild = mVisibleChildCount >> 1;
         
         if(!isFirstin){
-        	
-//        	System.out.println("##############11111  ChildCount    " + getChildCount());
-        	
+
         	if(lastMid+1==mid){
-        		System.out.println("##############11111 000000000  ChildCount    " + getChildCount());
-        		
+
         		int actuallyPositionStart = getActuallyPosition(lastMid - leftChild);
         		View view = showViewArray.get(actuallyPositionStart);
         		showViewArray.remove(actuallyPositionStart);
         		removeViewArray.add(view);
         		removeView(view);
-//        		firstIndex
-        		
+
     			View convertView = null;
     			if (removeViewArray.size() > 0) {
     				convertView = removeViewArray.remove(0);
@@ -409,9 +405,7 @@ public class CoverFlowView extends RelativeLayout {
         }
         
         lastMid = mid;
-        
-  
-		
+
         // draw the left children
         // 计算左边孩子的位置
         int startPos = mid - leftChild;
@@ -432,7 +426,7 @@ public class CoverFlowView extends RelativeLayout {
         for (i = endPos; i >= mid; --i,j=j+2) {
         	//TODO 计算右边和中间孩子的位置
         	View child = layoutRrightChild(i+j, i - offset);
-        	
+
         	if(isChange){
         		int actuallyPosition = getActuallyPosition(i);
         		mAdapter.getData(child, actuallyPosition);
@@ -470,9 +464,7 @@ public class CoverFlowView extends RelativeLayout {
      * <ul>
      * <li>对bitmap进行伪3d变换</li>
      * </ul>
-     * 
-     * @param childTransfromMatrix
-     * @param mDrawChildPaint
+     *
      * @param child
      * @param position
      * @param offset
@@ -480,13 +472,13 @@ public class CoverFlowView extends RelativeLayout {
     private void makeChildTransfromer(View child, int position, float offset) {
 //    	child.layout(0, 0, ScreenUtil.dp2px(getContext(), 200),ScreenUtil.dp2px(getContext(), 110));
     	child.layout(0, 0, child.getMeasuredWidth(),child.getMeasuredHeight());
-    	
-        float scale = 0;
+
+		float scale = 0;
 		scale = 1 - Math.abs(offset) * 0.25f;
 	
 	
         // 延x轴移动的距离应该根据center图片决定
-        float translateX = 0;
+		float translateX = 0;
 
         final int originalChildHeight = (int) (mChildHeight - mChildHeight
                 * reflectHeightFraction - reflectGap);
@@ -526,11 +518,11 @@ public class CoverFlowView extends RelativeLayout {
 //        System.out.println("##############   translateX : " + translateX + " childWidth : " + childWidth + " mWidth : " + mWidth);
         
         //根据offset 算出透明度
-        float alpha = (float) 254 - Math.abs(offset) * STANDARD_ALPHA;
+		float alpha = 254 - Math.abs(offset) * STANDARD_ALPHA;
 
         System.out.println("##############   STANDARD_ALPHA : " + STANDARD_ALPHA );
         
-        child.setAlpha((int) 0);
+        child.setAlpha(0);
         if (alpha < 0) {
             alpha = 0;
         } else if (alpha > 254) {
@@ -548,9 +540,9 @@ public class CoverFlowView extends RelativeLayout {
       
         
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(child, "scaleX",  
-                1.0f, childHeightScale);  
+                1.0f, (float)childHeightScale);
         ObjectAnimator anim2 = ObjectAnimator.ofFloat(child, "scaleY", 
-                1.0f, childHeightScale);  
+                1.0f, (float)childHeightScale);
         AnimatorSet animSet = new AnimatorSet();  
         animSet.setDuration(0);  
         //两个动画同时执行  
@@ -563,11 +555,9 @@ public class CoverFlowView extends RelativeLayout {
         animSet.start();
         
         
-        child.setTranslationX(translateX);
+        child.setTranslationX((float)translateX);
         child.setTranslationY(mChildTranslateY+ adjustedChildTranslateY);
-        
-        
-        
+
 //        
 //        
 //        System.out.println("###################  w : " + child.getWidth() + " childHeightScale : " + childHeightScale +"  " + child.getWidth()*childHeightScale);
@@ -577,8 +567,22 @@ public class CoverFlowView extends RelativeLayout {
 //        System.out.println("###################  alpha : " + alpha + "   translateX : " + translateX + "  mChildTranslateY  : " + mChildTranslateY+ adjustedChildTranslateY);
         
     }
-	
-	
+
+	/**
+	 * 获取顶部Item position
+	 * @return
+	 */
+	public int getTopViewPosition(){
+		return getActuallyPosition(lastMid);
+	}
+
+	/**
+	 * 获取顶部Item View
+	 * @return
+	 */
+	public View getTopView(){
+		return showViewArray.get(getActuallyPosition(VISIBLE_VIEWS+lastMid));
+	}
 	
 	
     /**
@@ -612,16 +616,22 @@ public class CoverFlowView extends RelativeLayout {
 	public ICoverFlowAdapter getAdapter() {
 		return mAdapter;
 	}
-	
+
+	private boolean onTouchMove = false; //是否正在执行触摸移动逻辑
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (getParent() != null) {
             getParent().requestDisallowInterceptTouchEvent(true);
         }
 
+		if(isOnAnimator){
+			return false;
+		}
         int action = event.getAction();
         switch (action) {
         case MotionEvent.ACTION_DOWN:
+			onTouchMove = true;
             if (mScroller.computeScrollOffset()) {
                 mScroller.abortAnimation();
                 invalidate();
@@ -726,7 +736,7 @@ public class CoverFlowView extends RelativeLayout {
             mVelocity.addMovement(event);
 
             mVelocity.computeCurrentVelocity(1000);
-            double speed = mVelocity.getXVelocity();
+			float speed = mVelocity.getXVelocity();
 
             speed = (speed / mWidth) * MOVE_SPEED_MULTIPLE;
             if (speed > MAX_SPEED)
@@ -738,6 +748,7 @@ public class CoverFlowView extends RelativeLayout {
         } else {
             Log.e(VIEW_LOG_TAG,
                     " touch ==>" + event.getX() + " , " + event.getY());
+			onTouchMove = false;
 //            if (mTouchRect != null) {
 //                if (mTouchRect.contains(event.getX(), event.getY())
 //                        && mCoverFlowListener != null && topImageClickEnable
@@ -757,16 +768,18 @@ public class CoverFlowView extends RelativeLayout {
     private float mStartSpeed;
     private float mDuration;
     
-    private void startAnimation(double speed) {
-        if (mAnimationRunnable != null)
+    private void startAnimation(float speed) {
+        if (mAnimationRunnable != null){
+			onTouchMove = false;
             return;
+		}
 
-        double delta = speed * speed / (FRICTION * 2);
+		float delta = speed * speed / (FRICTION * 2);
         if (speed < 0)
             delta = -delta;
 
-        double nearest = mStartOffset + delta;
-        nearest = Math.floor(nearest + 0.5);
+		float nearest = mStartOffset + delta;
+        nearest = (float)Math.floor(nearest + 0.5f);
 
         mStartSpeed = (float) Math.sqrt(Math.abs(nearest - mStartOffset)
                 * FRICTION * 2);
@@ -788,8 +801,10 @@ public class CoverFlowView extends RelativeLayout {
     
     private void driveAnimation() {
         float elapsed = (AnimationUtils.currentAnimationTimeMillis() - mStartTime) / 1000.0f;
-        if (elapsed >= mDuration)
+        if (elapsed >= mDuration){
             endAnimation();
+			onTouchMove = false;
+		}
         else {
             updateAnimationAtElapsed(elapsed);
             post(mAnimationRunnable);
@@ -817,7 +832,7 @@ public class CoverFlowView extends RelativeLayout {
     
     private void stopLongClick() {
         if (mLongClickRunnable != null) {
-            removeCallbacks(mLongClickRunnable);//清楚延时runable
+            removeCallbacks(mLongClickRunnable);//清除延时runable
             mLongClickPosted = false;
             mLongClickTriggled = false;
         }
@@ -836,7 +851,63 @@ public class CoverFlowView extends RelativeLayout {
             invalidate();
         }
     }
-    
+
+
+	private boolean isOnAnimator = false; //是否正在进行点击切换动画
+	/**
+	 * 翻到前页
+	 */
+	public void gotoPrevious(){
+		doAnimator(-1.0f);
+
+	}
+
+	/**
+	 * 前进到后一页
+	 */
+	public void gotoForward(){
+		doAnimator(1.0f);
+	}
+
+
+	public void doAnimator(float target){
+		if(isOnAnimator||onTouchMove){ //如果正在执行点击切换动画 或者 正在执行触摸移动
+			return;
+		}
+		isOnAnimator = true;
+		ValueAnimator animator = ValueAnimator.ofFloat(mOffset,mOffset+target);
+		animator.setDuration(300).start();
+      animator.setInterpolator(new AccelerateDecelerateInterpolator());
+		animator.addUpdateListener(new AnimatorUpdateListener(){
+
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				mOffset=(Float)animation.getAnimatedValue();
+
+//				System.out.println("##################3  mOffset : " + mOffset);
+
+				invalidate();
+				requestLayout();
+			}
+		});
+		animator.addListener(new Animator.AnimatorListener() {
+			@Override
+			public void onAnimationStart(Animator animation) {}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				isOnAnimator = false;
+			}
+		});
+	}
+
+
 
     private class LongClickRunnable implements Runnable {
         private int position;
@@ -855,18 +926,18 @@ public class CoverFlowView extends RelativeLayout {
     }
     
     
-    public static interface TopImageLongClickListener {
-        public void onLongClick(int position);
+    public interface TopImageLongClickListener {
+         void onLongClick(int position);
     }
 
-    public static interface CoverFlowListener {
-        public void imageOnTop(final CoverFlowView coverFlowView,
-                int position, float left, float top, float right, float bottom);
+    public interface CoverFlowListener {
+         void imageOnTop(final CoverFlowView coverFlowView,
+							   int position, float left, float top, float right, float bottom);
 
-        public void topImageClicked(final CoverFlowView coverFlowView,
-                int position);
+         void topImageClicked(final CoverFlowView coverFlowView,
+									int position);
 				
-		public void invalidationCompleted();
+		 void invalidationCompleted();
     }
     
 }

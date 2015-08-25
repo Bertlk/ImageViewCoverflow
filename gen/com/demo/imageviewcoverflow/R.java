@@ -83,13 +83,17 @@ containing a value of this type.
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f040007;
+        public static final int action_settings=0x7f04000b;
         public static final int bottom=0x7f040001;
         public static final int center_vertical=0x7f040002;
         public static final int coverflow=0x7f040005;
+        public static final int forward_btn=0x7f040007;
+        public static final int get_top_btn=0x7f040008;
+        public static final int get_top_view_btn=0x7f040009;
         public static final int match_parent=0x7f040003;
+        public static final int previous_btn=0x7f040006;
         public static final int top=0x7f040000;
-        public static final int tv=0x7f040006;
+        public static final int tv=0x7f04000a;
         public static final int wrap_content=0x7f040004;
     }
     public static final class layout {
